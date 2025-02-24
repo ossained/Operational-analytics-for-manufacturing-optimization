@@ -1,0 +1,26 @@
+Project Title: Analyzing Production Efficiency and Downtime Factors in a Soda Manufacturing Plant
+
+Problem Statement:
+The goal of this analysis is to assess production efficiency by examining batch production times, identifying major downtime causes, and understanding operator performance. 
+We aim to highlight inefficiencies and suggest improvements for optimized production
+
+Key Questions to Answer:
+
+Production Analysis:
+What is the total number of batches produced per product and flavor?
+Which product size has the highest and lowest production volume?
+
+Efficiency Check:
+Calculate the average production time per product and compare it with the minimum batch time
+Identify batches that exceeded the minimum required production time and compute the percentage of inefficient batches
+
+Downtime Analysis:
+What are the top three most common downtime factors?
+What percentage of total downtime is attributed to operator errors?
+Identify the operators with the highest and lowest total downtime in their batches
+
+Performance Comparison:
+Compare total production time for different operators and rank them based on efficiency
+Find the operator with the highest number of batches that exceeded the minimum batch time
+
+Create a report combining batches with downtime and batches without downtime, ensuring all batches are included
