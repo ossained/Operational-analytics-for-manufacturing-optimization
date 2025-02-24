@@ -1,0 +1,29 @@
+1. Batch Efficiency (Production Times and Variations)
+Goal: Understand time variations for producing different products and assess the impact of downtime.
+What is the average production time for each product?
+How do production times vary between products (e.g., flavors and sizes)?
+Which products consistently take the longest to produce?
+What is the variance in production time by operator for the same product?
+
+2. Downtime Causes (Identifying Reasons for Delays)
+Goal: Identify downtime factors and their impacts on production efficiency.
+What are the main downtime factors (operator error, equipment failure, etc.)?
+Which downtime factors are most frequent across products?
+How does downtime affect the overall production timeline for each product?
+What is the average downtime per batch for each downtime factor?
+Which downtime factors lead to the longest delays in production?
+
+3. Operator Performance (Evaluating Operators’ Impact on Production)
+Goal: Assess operator performance and identify patterns related to production delays.
+How do production times vary by operator for the same product?
+Which operators have the highest and lowest average production times?
+How do different operators contribute to downtime (e.g., operator error)?
+Are there patterns in downtime related to specific operators?
+
+4. Product Performance (Identifying Bottlenecks)
+Goal: Identify products prone to downtime and recommend improvements.
+Which products experience the most downtime during production?
+Are there specific downtime factors that are more prominent for certain products?
+Which products have the longest and most inconsistent production times?
+Can we categorize products by their average production time (fast, moderate, slow)?
+Which products have the greatest potential for optimization in terms of production time?
