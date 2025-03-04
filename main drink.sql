@@ -145,7 +145,6 @@ left join Line_Productivity lp on ld.batch = lp.Batch
 group by lp.product
 ),
 
-
 total_minute as (
 select sum(downtime_minutes) as total_minute from line_downtime1)
 
@@ -204,7 +203,7 @@ group by ld.batch),
 product_downtime as (
 
 
- select Product,sum(downtime_minutes) as total_downtime_min from Line_Productivity lp
+ select lp.Product,sum(downtime_minutes) as total_downtime_min from Line_Productivity lp
  join line_downtime1 ld on lp.Batch = ld.batch
  group by product),
 
@@ -213,6 +212,8 @@ product_downtime as (
  join Line_Productivity lp on ld.batch = lp.Batch
  where downtime_minutes >0
  group by product),
+
+ 
 
  total_batch as (
  select product,count(batch) as total_batch from Line_Productivity
@@ -226,27 +227,21 @@ product_downtime as (
  downtime_cause as (
  select product,description,total_downtime from major_factor
  where downtime_cause =1) 
- select * from downtime_cause 
+ 
 
 
-
-select pd.product,total_downtime_min,
-(total_downtime_min * 100.0) / t.overall as percentage,total_production_min,
-avg_production_min,cnt_batchdowntime,total_batch,round(cast(total_batch as float )* 100.0 /nullif(cnt_batchdowntime,0),2)as batch_failure_rate,
-description
+select pd.product,pd.total_downtime_min,
+(pd.total_downtime_min * 100.0) / nullif(t.overall,0) as percentage,pm.total_production_min,
+at.avg_production_min,dc.cnt_batchdowntime,tb.total_batch,round(cast(tb.total_batch as float )* 100.0 /nullif(dc.cnt_batchdowntime,0),2)as batch_failure_rate,
+de.description
 from product_downtime pd
-cross join total t left join production_min pm on pd.product = pm.product 
+cross join total t 
+left join production_min pm on pd.product = pm.product 
 left join avg_time at on at.product =pm.product 
 left join downtime_cnt dc on dc.product = pd.product
 left join total_batch tb on pm.product = tb.product
-left join downtime_cause dc on pd.product =dc.product 
-order by cnt_batchdowntime desc
-
-
-
-
-
-
+left join downtime_cause de on pd.product =de.product 
+order by dc.cnt_batchdowntime desc
 
 
 
