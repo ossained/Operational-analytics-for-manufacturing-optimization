@@ -216,12 +216,18 @@ product_downtime as (
 
  total_batch as (
  select product,count(batch) as total_batch from Line_Productivity
- group by Product)
+ group by Product),
+
+ major_factor as (
+ select lp.Product,description,(sum(downtime_minutes)  over (partition by product,description order by downtime_minutes desc)) as dowmtime_cause from line_downtime1 ld
+ inner join Line_Productivity lp on ld.batch = lp.Batch
+ left join Downtine_Factors df  on ld.factor = df.Factor
+ group by lp.Product,description
 
 
 select pd.product,total_downtime_min,
 (total_downtime_min * 100.0) / t.overall as percentage,total_production_min,
-avg_production_min,cnt_batchdowntime,total_batch
+avg_production_min,cnt_batchdowntime,total_batch,round(cast(total_batch as float )* 100.0 /nullif(cnt_batchdowntime,0),2)as batch_failure_rate
 from product_downtime pd
 cross join total t left join production_min pm on pd.product = pm.product 
 left join avg_time at on at.product =pm.product 
@@ -235,13 +241,6 @@ order by cnt_batchdowntime desc
 
 
 
-
-
-select product,df.Description,sum(ld.downtime_minutes)as totalminute from Line_Productivity lp
-inner join line_downtime1 ld on lp.Batch = ld.batch
-inner join Downtine_Factors df on ld.factor = df.Factor
-group by df.Description,Product
-order by totalminute desc
 
 
 
