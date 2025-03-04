@@ -212,16 +212,21 @@ product_downtime as (
  select product,count(ld.batch) as cnt_batchdowntime from line_downtime1 ld
  join Line_Productivity lp on ld.batch = lp.Batch
  where downtime_minutes >0
- group by product)
+ group by product),
+
+ total_batch as (
+ select product,count(batch) as total_batch from Line_Productivity
+ group by Product)
 
 
 select pd.product,total_downtime_min,
 (total_downtime_min * 100.0) / t.overall as percentage,total_production_min,
-avg_production_min,cnt_batchdowntime
+avg_production_min,cnt_batchdowntime,total_batch
 from product_downtime pd
 cross join total t left join production_min pm on pd.product = pm.product 
 left join avg_time at on at.product =pm.product 
 left join downtime_cnt dc on dc.product = pd.product
+left join total_batch tb on pm.product = tb.product
 order by cnt_batchdowntime desc
 
 
