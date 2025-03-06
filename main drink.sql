@@ -239,14 +239,14 @@ select lp.Product,sum(downtime_minutes) as total_downtime_min from Line_Producti
  select product, count(distinct lp.Batch)as affected_batches from line_downtime1 ld
  left join line_productivity lp on ld.batch = lp.batch
  where downtime_minutes>0
- group by Product)
+ group by Product),
 
  
 -----MAIN INSIGHT----
-
-select pd.product,pd.total_downtime_min,
-(pd.total_downtime_min * 100.0) / nullif(t.overall,0) as percentage,pm.total_production_min,
-at.avg_production_min,dc.cnt_batchdowntime,tb.total_batch,round(cast(tb.total_batch as float )* 100.0 /nullif(dc.cnt_batchdowntime,0),2)as batch_failure_rate,
+main_insight as (
+select pd.product as product ,pd.total_downtime_min as total_downtime_min,
+(pd.total_downtime_min * 100.0) / nullif(t.overall,0) as percentage_of_totaldowntime,pm.total_production_min,
+at.avg_production_min,dc.cnt_batchdowntime,tb.total_batch,round(cast(ab.affected_batches as float)* 100.0 /nullif(tb.total_batch,0 ),2)as batch_failure_rate,
 de.description,affected_batches,round(cast(affected_batches as float)*100.0 /tb.total_batch,2) as percentage_affected_batches
 from product_downtime pd
 cross join total t 
@@ -256,9 +256,25 @@ left join downtime_cnt dc on dc.product = pd.product
 left join total_batch tb on pm.product = tb.product
 left join downtime_cause de on pd.product =de.product 
 left join affected_batches ab on pd.product =ab.product
-order by dc.cnt_batchdowntime desc
+),
+time_diff as (
+select p.Product,sum(total_downtime_min) as total_downtime_min,sum(Min_batch_time) as Min_batch_time,
+ sum(total_downtime_min) / sum(Min_batch_time) as total_batchloss
+ from main_insight ms
+left join Products p on ms.product = p.Product
+where p.product in ('co-600','rb-600','co-2l')
+group by p.product)
 
 
+select (sum(dff.total_downtime_min) * 100.0)/sum(ms.total_downtime_min) from time_diff dff
+left join main_insight ms on dff.product = ms.product
+
+
+
+select lp.Batch,Start_Time,End_Time,Description,Operator_Error from line_downtime1 ld
+join Line_Productivity lp on ld.batch = lp.Batch
+join Downtine_Factors df on ld.factor = df.Factor
+where Description in ('machine failure' , 'machine adjustment') 
 
 
 
