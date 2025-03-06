@@ -258,17 +258,20 @@ left join downtime_cause de on pd.product =de.product
 left join affected_batches ab on pd.product =ab.product
 ),
 time_diff as (
-select p.Product,sum(total_downtime_min) as total_downtime_min,sum(Min_batch_time) as Min_batch_time,
+select ms.Product,sum(total_downtime_min) as total_downtime_min,sum(Min_batch_time) as Min_batch_time,
  sum(total_downtime_min) / sum(Min_batch_time) as total_batchloss
  from main_insight ms
 left join Products p on ms.product = p.Product
-where p.product in ('co-600','rb-600','co-2l')
-group by p.product)
+where ms.product in ('co-600','rb-600','co-2l')
+group by ms.product),
 
+percentage_3products as (
+select sum(total_downtime_min)* 100.0 / (
+ select sum(downtime_minutes)as overall from line_downtime1) as percentage_3products  from time_diff),
 
-select (sum(dff.total_downtime_min) * 100.0)/sum(ms.total_downtime_min) from time_diff dff
-left join main_insight ms on dff.product = ms.product
+ select sum(total_downtime_min) from time_diff
 
+ select * from Products
 
 
 select lp.Batch,Start_Time,End_Time,Description,Operator_Error from line_downtime1 ld
