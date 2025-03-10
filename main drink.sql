@@ -240,6 +240,7 @@ select lp.Product,sum(Downtime_Mins) as total_downtime_min from Line_Productivit
  affected_batches as (
  select product, count(distinct lp.Batch)as affected_batches from line_downtime1 ld
  left join line_productivity lp on ld.batch = lp.batch
+<<<<<<< HEAD
  where Downtime_Mins > 0
  group by Product)
  ,
@@ -249,13 +250,24 @@ select lp.Product,sum(Downtime_Mins) as total_downtime_min from Line_Productivit
 
  
 -----MAIN INSIGHT----
+=======
+ where downtime_minutes>0
+ group by Product),
+
+ 
+-----MAIN INSIGHT----
+>>>>>>> 5c6b7c8e4278e24fd89f44525315a173be21b3ca
 main_insight as (
 select pd.product as product ,pd.total_downtime_min as total_downtime_min,
 (pd.total_downtime_min * 100.0) / nullif(t.overall,0) as percentage_of_totaldowntime,pm.total_production_min,
 at.avg_production_min,dc.cnt_batchdowntime,tb.total_batch,round(cast(ab.affected_batches as float)* 100.0 /nullif(tb.total_batch,0 ),2)as batch_failure_rate,
+<<<<<<< HEAD
 de.description,affected_batches,round(cast(affected_batches as float)*100.0 /tb.total_batch,2) as percentage_affected_batches, 
 (pd.total_downtime_min) / Min_batch_time as total_batchloss, Min_batch_time AS expected_batch_time, pd.total_downtime_min * 0.5 AS expected_downtime,
 CAST(pd.total_downtime_min AS INT) / CAST(Min_batch_time AS INT) / 2 AS batches_gained
+=======
+de.description,affected_batches,round(cast(affected_batches as float)*100.0 /tb.total_batch,2) as percentage_affected_batches
+>>>>>>> 5c6b7c8e4278e24fd89f44525315a173be21b3ca
 from product_downtime pd
 cross join total t 
 left join production_min pm on pd.product = pm.product 
@@ -264,6 +276,7 @@ left join downtime_cnt dc on dc.product = pd.product
 left join total_batch tb on pm.product = tb.product
 left join downtime_cause de on pd.product =de.product 
 left join affected_batches ab on pd.product =ab.product
+<<<<<<< HEAD
 left join Products p ON p.product = ab.product 
 )
 
@@ -276,6 +289,30 @@ where product in ('co-600','rb-600','co-2l')
 SELECT * FROM VWproduct
 
 
+=======
+),
+time_diff as (
+select ms.Product,sum(total_downtime_min) as total_downtime_min,sum(Min_batch_time) as Min_batch_time,
+ sum(total_downtime_min) / sum(Min_batch_time) as total_batchloss
+ from main_insight ms
+left join Products p on ms.product = p.Product
+where ms.product in ('co-600','rb-600','co-2l')
+group by ms.product),
+
+percentage_3products as (
+select sum(total_downtime_min)* 100.0 / (
+ select sum(downtime_minutes)as overall from line_downtime1) as percentage_3products  from time_diff),
+
+ select sum(total_downtime_min) from time_diff
+
+ select * from Products
+
+
+select lp.Batch,Start_Time,End_Time,Description,Operator_Error from line_downtime1 ld
+join Line_Productivity lp on ld.batch = lp.Batch
+join Downtine_Factors df on ld.factor = df.Factor
+where Description in ('machine failure' , 'machine adjustment') 
+>>>>>>> 5c6b7c8e4278e24fd89f44525315a173be21b3ca
 
 
 SELECT lp.batch,product,date,Start_Time,End_Time, description,SUM(downtime_mins) total
