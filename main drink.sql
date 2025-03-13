@@ -293,9 +293,9 @@ with production_loss as (
 select lp.Product,sum(downtime_minutes) as total_downtime_min 
 from Line_Productivity lp
  join line_downtime1 ld on lp.Batch = ld.batch
- group by lp.product),
+ group by lp.product)
 
- gain as (
+ --gain as (
  select pl.Product,total_downtime_min,min_batch_time, total_downtime_min /min_batch_time as losses from production_loss pl
  left join products p on pl.product = p.product
  ),
@@ -306,6 +306,17 @@ select lp.Product,sum(DATEDIFF(MINUTE, CAST(Start_Time AS DATETIME),
 			from line_productivity lp
 			inner join gain g on lp.Product =g.product
 			group by lp.Product ,g.total_downtime_min,Min_batch_time)
+
+
+		select lp.product,sum(downtime_minutes) down_time,round(sum(downtime_minutes) * 0.5,0)as mins_gained,
+		round(sum(downtime_minutes) * 0.5/min_batch_time,0) as batch_gain,
+		sum(downtime_minutes)/ Min_batch_time as losses
+
+		from line_downtime1 ld
+		left join Line_Productivity lp on ld.batch = lp.Batch
+		left join Products p on lp.product= p.product
+		group by lp.Product,Min_batch_time
+		
 
 
 			select sum(min_gain) /avg(min_batch_time) from overall_gain
