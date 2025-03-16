@@ -119,6 +119,11 @@ GROUP BY lp.Product;
 
 By implementing our recommended fixes, we can recover 7 batches and save 8 hours of production time.
 
+----------
+### Dashboard
+![drinks](https://github.com/user-attachments/assets/54789ca9-c13f-4e60-9b7d-b4a6b2e6795f)
+
+
 ---------
 ### Recommendations
 •	Use Preventive Maintenance (High Impact) to strengthen machine maintenance procedures so as to lower unplanned failures.
