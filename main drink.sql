@@ -184,7 +184,7 @@ select product,sum(DATEDIFF(MINUTE, CAST(Start_Time AS DATETIME),
 
 ---TOTAL PRODUCTION TIME---
 drop view Drinks
-
+select * from drinks
 create view drinks as 
 with production_min as (
 select product,sum(DATEDIFF(MINUTE, CAST(Start_Time AS DATETIME), 
@@ -259,15 +259,14 @@ left join downtime_cnt dc on dc.product = pd.product
 left join total_batch tb on pm.product = tb.product
 left join downtime_cause de on pd.product =de.product 
 left join affected_batches ab on pd.product =ab.product
-order by total_downtime_min desc
+--order by total_downtime_min desc
 
 
-select distinct* from drinks
 ),
 
 
 
---time_diff as (
+time_diff as (
 select ms.Product,sum(total_downtime_min) as total_downtime_min,sum(Min_batch_time) as Min_batch_time,
  sum(total_downtime_min) / sum(Min_batch_time) as total_batchloss
  from main_insight ms
@@ -281,7 +280,7 @@ select sum(total_downtime_min)* 100.0 / (
 
  select sum(total_downtime_min) from time_diff
 
- select * from Products
+ 
 
 
 select lp.Batch,Start_Time,End_Time,Description,Operator_Error from line_downtime1 ld
@@ -289,17 +288,19 @@ join Line_Productivity lp on ld.batch = lp.Batch
 join Downtine_Factors df on ld.factor = df.Factor
 where Description in ('machine failure' , 'machine adjustment') 
 
+
+create view drink2 as 
 with production_loss as (
 select lp.Product,sum(downtime_minutes) as total_downtime_min 
 from Line_Productivity lp
  join line_downtime1 ld on lp.Batch = ld.batch
- group by lp.product)
+ group by lp.product),
 
- --gain as (
+gain as (
  select pl.Product,total_downtime_min,min_batch_time, total_downtime_min /min_batch_time as losses from production_loss pl
  left join products p on pl.product = p.product
  ),
- overall_gain as (
+overall_gain as (
 select lp.Product,sum(DATEDIFF(MINUTE, CAST(Start_Time AS DATETIME), 
                      DATEADD(DAY, CASE WHEN End_Time < Start_Time THEN 1 ELSE 0 END, CAST(End_Time AS DATETIME)))) as total_production_min,
 			g.total_downtime_min,g.total_downtime_min * 0.2 as min_gain,min_batch_time
@@ -316,7 +317,11 @@ select lp.Product,sum(DATEDIFF(MINUTE, CAST(Start_Time AS DATETIME),
 		left join Line_Productivity lp on ld.batch = lp.Batch
 		left join Products p on lp.product= p.product
 		group by lp.Product,Min_batch_time
-		
+		 select * from drinks
+		 select * from drink2
 
 
 			select sum(min_gain) /avg(min_batch_time) from overall_gain
+
+			select count(batch) as total_batch from Line_Productivity
+			
